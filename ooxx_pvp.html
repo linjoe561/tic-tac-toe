@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background-color: #000;
+            text-align: center;
+        }
+        .gameArea {
+            display: flex;
+            flex-wrap: wrap;
+            width: 300px;
+            margin: auto;
+            margin-top: 25vh;
+            position: relative;
+            background-color: #333;
+        }
+        .col {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 90px;
+            height: 90px;
+            margin: 5px;
+            background-color: #000;
+            color: #ccc;
+            font-size: 3rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="gameArea">
+        <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+    </div>
+
+    <script>
+        //1.每次結束.就換對方
+        //2.看是否有連線(3個)
+        //addEventListener 'click'
+        // 8個可能
+
+        // 以圈為開始
+        let isCross = false;
+
+        let step = 0;
+
+        let O = [];
+        let X = [];
+
+        // Take turns
+        function switchTurn() {
+            isCross = !isCross;
+        }
+        
+        // 遊戲規則：三格連成一線
+        function winner(arr) {
+            let lrCross = Math.abs(arr[0] + arr[4] + arr[8]);
+            let rlCross = Math.abs(arr[2] + arr[4] + arr[6]);
+
+            if (lrCross === 3 || rlCross === 3) return true;
+
+            for (let i = 0; i < 3; i++) {
+                let col = Math.abs(arr[i] + arr[i + 3] + arr[i + 6]);
+                let row = Math.abs(arr[3 * i] + arr[3 * i + 1] + arr[3 * i + 2]);
+                if (col === 3 || row === 3) return true;
+            }
+        }
+
+        // 重新開始遊戲
+        function resetGame() {
+            window.location.reload();
+        }
+
+        // 輸贏?
+        function checkWinner() {
+            step++;
+            if (winner(O)) {
+                setTimeout(() => {
+                    alert('O win');
+                    resetGame();
+                }, 100);
+                return true;
+            }
+            if (winner(X)) {
+                setTimeout(() => {
+                    alert('X win');
+                    resetGame();
+                }, 100);
+                return true;
+            }
+            if (step === 18) {
+                setTimeout(() => {
+                    alert('tie');
+                    resetGame();
+                }, 100);
+                return true;
+            }
+            return false;
+        }
+
+        // 執行
+        document.querySelectorAll('.col').forEach((item, index) => {
+            item.addEventListener('click', function() {
+                if (checkWinner()) return;
+                if (!isCross && !item.innerText) {
+                    item.innerText = 'O';
+                    O[index] = 1;
+                    checkWinner();
+                    switchTurn();
+                }
+                if (isCross && !item.innerText) {
+                    item.innerText = 'X';
+                    X[index] = -1;
+                    checkWinner();
+                    switchTurn();
+                }
+            })
+        });
+    </script>
+</body>
+</html>
